@@ -11,8 +11,6 @@ namespace MentalCardGame.RNG
 {
     internal class PrivateKey
     {
-        private bool validParameter = false;
-
         private byte[] modulusCach;
         private byte[] exponentCach;
         private byte[] pCach;
@@ -184,16 +182,6 @@ namespace MentalCardGame.RNG
             KeyPair = provider.CreateKeyPair(512);
         }
 
-        public async Task<byte[]> Sign(byte[] toSign)
-        {
-            return (await CryptographicEngine.SignAsync(KeyPair, toSign.AsBuffer())).ToArray();
-        }
-
-        public bool Veryfiy(byte[] toVeryfy, byte[] signiture)
-        {
-            return CryptographicEngine.VerifySignature(KeyPair, toVeryfy.AsBuffer(), signiture.AsBuffer());
-        }
-
         private void SetCach()
         {
             var byteblob = KeyPair.Export(CryptographicPrivateKeyBlobType.Capi1PrivateKey).ToArray();
@@ -213,11 +201,9 @@ namespace MentalCardGame.RNG
             try
             {
                 KeyPair = provider.ImportKeyPair(binary.AsBuffer(), CryptographicPrivateKeyBlobType.Capi1PrivateKey);
-                validParameter = true;
             }
             catch (Exception)
             {
-                validParameter = false;
             }
             modulusCach = modulus;
             exponentCach = exponent;
@@ -227,11 +213,6 @@ namespace MentalCardGame.RNG
             dqCach = dq;
             inverseQCach = inverseQ;
             dCach = d;
-        }
-
-        public bool ValidParameter
-        {
-            get { return validParameter; }
         }
     }
 }

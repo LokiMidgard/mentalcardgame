@@ -10,52 +10,6 @@ namespace MentalCardGame.RNG
 {
     internal static class BlobConverter
     {
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="modulo">Modulo in big-endian</param>
-        /// <param name="exp">Exponent in big-endian</param>
-        /// <returns></returns>
-        public static PublicKeyBlob ToPublicKeyBlobData(byte[] modulo, byte[] exp)
-        {
-            var publicKeyStruct = new PUBLICKEYSTRUC();
-            publicKeyStruct.aiKeyAlg = ALG_ID.CALG_RSA_KEYX;
-            publicKeyStruct.bType = BlobType.PUBLICKEYBLOB;
-            publicKeyStruct.bVersion = 2;
-            var rsa = new RSAPUBKEY();
-            rsa.magic = RSAPUBKRY_Magic.RSA1;
-            rsa.bitlen = (uint)modulo.Length * 8;
-            rsa.pubexp = BitConverter.ToUInt32(exp.Concat((byte)0).ToArray(), 0);
-
-            var erg = new PublicKeyBlob();
-            erg.modulus = modulo.Reverse().ToArray();
-            erg.publickeystruc = publicKeyStruct;
-            erg.rsapubkey = rsa;
-            return erg;
-        }
-
-        public static void GetParameters(PublicKeyBlob blob, out byte[] modulo, out byte[] exp)
-        {
-            // ToDo laut internet ist der Exponent immer 3 byte, Windows läßt immer die letzen 0 bytes weg, wodurch es auch vier oder 2 bytes sein können. Gegencheckn mit tobies implementierung.
-            exp = BitConverter.GetBytes(blob.rsapubkey.pubexp).Take(3).ToArray();
-            modulo = blob.modulus.Reverse().ToArray();
-        }
-
-        public static byte[] ToPublicKeyBlobByte(PublicKeyBlob blop)
-        {
-            var list = new List<byte>();
-
-            //Publickeystruct
-            list.AddRange(GetBytes(blop.publickeystruc));
-
-            //RSAPubKey
-            list.AddRange(GetBytes(blop.rsapubkey));
-
-            list.AddRange(blop.modulus);
-
-            return list.ToArray();
-        }
-
         private static byte[] GetBytes(RSAPUBKEY rsapubkey)
         {
             List<byte> list = new List<byte>();
@@ -74,19 +28,6 @@ namespace MentalCardGame.RNG
             list.AddRange(BitConverter.GetBytes(publickeystruc.reserved));
             list.AddRange(BitConverter.GetBytes((UInt32)publickeystruc.aiKeyAlg));
             return list.ToArray();
-        }
-
-        public static PublicKeyBlob ToPublicKeyBlobData(byte[] blob)
-        {
-            var erg = new PublicKeyBlob();
-            PUBLICKEYSTRUC s1 = ReadPublicKeyStruct(blob.Take(8).ToArray());
-            RSAPUBKEY s2 = ReadRSAPubKey(blob.Skip(8).Take(12).ToArray());
-            byte[] modulo = blob.Skip(8).Skip(12).Reverse().ToArray();
-
-            erg.publickeystruc = s1;
-            erg.rsapubkey = s2;
-            erg.modulus = modulo.Reverse().ToArray();
-            return erg;
         }
 
         public static byte[] ToPrivateKeyBlobByte(PrivateKeyBlob blop)
@@ -283,18 +224,6 @@ namespace MentalCardGame.RNG
             public UInt32 bitlen { get; set; }
 
             public UInt32 pubexp { get; set; }
-        }
-
-        public struct PublicKeyBlob
-        {
-            public PUBLICKEYSTRUC publickeystruc { get; set; }
-
-            public RSAPUBKEY rsapubkey { get; set; }
-
-            /// <summary>
-            /// In Litle-Endian
-            /// </summary>
-            public Byte[] modulus { get; set; }
         }
 
         public enum RSAPUBKRY_Magic : uint
