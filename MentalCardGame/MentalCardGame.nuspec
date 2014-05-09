@@ -4,8 +4,8 @@
     <id>$id$</id>
     <version>$version$</version>
     <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <authors>Patrick Kranz</authors>
+    <owners>Patrick Kranz</owners>
     <licenseUrl>https://mentalcardgame.codeplex.com/license</licenseUrl>
     <projectUrl>https://mentalcardgame.codeplex.com/</projectUrl>
     <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->

@@ -36,6 +36,7 @@
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <None Include="MentalCardGame.nuspec" />
+    <None Include="Publish.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Card.cs" />
